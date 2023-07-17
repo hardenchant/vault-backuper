@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-backuper
+  labels:
+    app.kubernetes.io/name: vault-backuper
+    app.kubernetes.io/component: backuper
+    image-updater.globus.io/update: 'true'
+  annotations:
+    image-updater.globus.io/update-image-list: vault-backuper:latest
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: vault-backuper
+      app.kubernetes.io/component: backuper
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: vault-backuper
+        app.kubernetes.io/component: backuper
+    spec:
+      containers:
+        - name: vault-backuper
+          image: vault-backuper:latest
+          env:
+            - name: REQUESTS_CA_BUNDLE
+              value: /etc/ssl/certs/ca-certificates.crt
+          envFrom:
+            - configMapRef:
+                name: vault-backuper-configmap
+            - secretRef:
+                name: vault-backuper-secret
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "0.25"
+            limits:
+              memory: "512Mi"
+              cpu: "0.5"
+          volumeMounts:
+            - name: ca-certificates
+              readOnly: true
+              mountPath: /etc/ssl/certs
+      imagePullSecrets:
+        - name: harbor-auth
+      volumes:
+        - name: ca-certificates
+          hostPath:
+            path: /etc/ssl/certs
+            type: DirectoryOrCreate

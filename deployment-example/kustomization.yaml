@@ -1,0 +1,21 @@
+namespace: vault
+
+resources:
+  - deployment.yaml
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+secretGenerator:
+  - name: vault-backuper-secret
+    literals:
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - AWS_S3_BUCKET=
+      - VAULT_TOKEN=
+
+configMapGenerator:
+  - name: vault-backuper-configmap
+    literals:
+      - VAULT_ADDR=http://vault-active:8200
+      - AWS_HOST=
