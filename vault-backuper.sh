@@ -28,6 +28,9 @@ do
     echo "$DATE uploading backup"
     s3cmd --host $AWS_HOST --host-bucket $AWS_HOST put $BACKUP_FILE_PATH/$DATE-$BACKUP_FILE_NAME s3://vault-backup/$DATE-$BACKUP_FILE_NAME
 
+    echo "$DATE renew token"
+    vault token renew > /dev/null
+
     echo "$DATE sleeping for $PERIOD"
     sleep $PERIOD
 done
